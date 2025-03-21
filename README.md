@@ -17,7 +17,6 @@ O sistema é composto por:
 ### Estrutura de Diretórios Completa
 
 ```
-sistema-certificados/
 ├── app/                      # Pasta principal da aplicação
 │   ├── __init__.py           # Inicialização da aplicação Flask
 │   ├── routes.py             # Rotas da API e páginas
@@ -88,13 +87,13 @@ sistema-certificados/
 
 1. Clone ou copie todos os arquivos do repositório para sua máquina
    ```
-   git clone [URL_DO_REPOSITORIO] sistema-certificados
+   git clone [URL_DO_REPOSITORIO] Certificados-carreta
    ```
    ou descompacte o arquivo ZIP recebido
 
 2. Navegue até o diretório do projeto
    ```
-   cd sistema-certificados
+   cd Certificados-carreta
    ```
 
 3. Crie uma pasta para os dados (se não existir)
