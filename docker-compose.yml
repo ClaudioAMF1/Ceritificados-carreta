@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_PASSWORD=certificados_pwd
+      - POSTGRES_USER=certificados_user
+      - POSTGRES_DB=certificados_db
+    ports:
+      - "5432:5432"
+    restart: always
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U certificados_user -d certificados_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./:/app
+      - ./data:/app/data
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_USER=certificados_user
+      - DB_PASSWORD=certificados_pwd
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=certificados_db
+      - DEBUG=True
+    restart: always
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

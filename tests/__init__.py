@@ -1,0 +1,1 @@
+# Este arquivo permite que o diretório tests seja um pacote Python
