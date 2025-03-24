@@ -148,29 +148,6 @@ button:active {
     display: none;
 }
 
-.download-btn {
-    display: inline-block;
-    background-color: var(--secondary-color);
-    color: var(--dark-color);
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: var(--border-radius);
-    margin-top: 15px;
-    transition: var(--transition);
-    font-weight: 600;
-    text-align: center;
-    border: none;
-}
-
-.download-btn:hover {
-    background-color: #e6d600; /* Slightly darker yellow */
-    transform: translateY(-2px);
-}
-
-.download-btn:active {
-    transform: translateY(0);
-}
-
 .info-row {
     margin-bottom: 15px;
     display: flex;
@@ -216,9 +193,9 @@ button:active {
 .certificate-card {
     background-color: white;
     border-radius: var(--border-radius);
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: var(--box-shadow);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
     border-left: 5px solid var(--primary-color);
     transition: var(--transition);
 }
@@ -233,8 +210,8 @@ button:active {
     color: var(--primary-color);
     font-size: 18px;
     border-bottom: 1px solid var(--gray-medium);
-    padding-bottom: 10px;
-    margin-bottom: 15px;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
 }
 
 .certificate-meta {
@@ -244,12 +221,80 @@ button:active {
     margin-bottom: 20px;
 }
 
+.button-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+    align-items: center;
+}
+
+.download-btn, .evaluation-btn {
+    flex: 1;
+    min-width: 150px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.download-btn i, .evaluation-btn i, .course-evaluated i {
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.download-btn {
+    background-color: var(--secondary-color);
+    color: var(--dark-color);
+}
+
+.evaluation-btn {
+    background-color: var(--primary-color);
+    color: var(--light-color);
+}
+
+.course-evaluated {
+    flex: 1;
+    min-width: 150px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    font-weight: 600;
+    text-align: center;
+    color: var(--success-color);
+    user-select: none;
+    cursor: default;
+}
+
+.download-btn:hover {
+    background-color: #e6d600; /* Slightly darker yellow */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.evaluation-btn:hover {
+    background-color: #5228e7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
 .footer {
     background-color: var(--primary-color);
     color: var(--light-color);
     text-align: center;
     padding: 15px;
     font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .footer a {
@@ -259,6 +304,10 @@ button:active {
 
 .footer a:hover {
     text-decoration: underline;
+}
+
+.contact-info {
+    font-weight: 500;
 }
 
 /* Estilos responsivos */
@@ -274,5 +323,15 @@ button:active {
     
     .certificate-meta {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .course-evaluated {
+        margin-top: 10px;
     }
 }

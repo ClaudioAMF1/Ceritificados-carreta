@@ -36,6 +36,52 @@ document.getElementById('cpf').addEventListener('input', function (e) {
     e.target.value = value;
 });
 
+// Função para verificar se um curso já foi avaliado
+function cursoJaAvaliado(cpf, curso) {
+    const avaliacoes = JSON.parse(localStorage.getItem('cursosAvaliados') || '{}');
+    return avaliacoes[cpf] && avaliacoes[cpf].includes(curso);
+}
+
+// Função para marcar um curso como avaliado
+function marcarCursoComoAvaliado(cpf, curso) {
+    const avaliacoes = JSON.parse(localStorage.getItem('cursosAvaliados') || '{}');
+    
+    if (!avaliacoes[cpf]) {
+        avaliacoes[cpf] = [];
+    }
+    
+    if (!avaliacoes[cpf].includes(curso)) {
+        avaliacoes[cpf].push(curso);
+        localStorage.setItem('cursosAvaliados', JSON.stringify(avaliacoes));
+    }
+}
+
+// Função para configurar os botões de avaliação
+function configurarBotoesAvaliacao() {
+    document.querySelectorAll('.evaluation-btn').forEach(btn => {
+        const cpf = btn.getAttribute('data-cpf');
+        const curso = btn.getAttribute('data-curso');
+        
+        // Adicionar evento de clique para botões não avaliados
+        btn.addEventListener('click', function(e) {
+            // Permitir que o link se abra em nova aba
+            setTimeout(function() {
+                marcarCursoComoAvaliado(cpf, curso);
+                
+                // Substituir o botão por um span
+                const buttonGroup = btn.parentElement;
+                const textElement = document.createElement('span');
+                textElement.className = 'course-evaluated';
+                textElement.innerHTML = '<i class="fas fa-check-circle"></i> Curso avaliado!';
+                
+                // Remover o botão antigo e adicionar o novo span
+                buttonGroup.removeChild(btn);
+                buttonGroup.appendChild(textElement);
+            }, 500);
+        });
+    });
+}
+
 function buscarCertificado() {
     const cpfInput = document.getElementById('cpf').value;
     const estado = document.getElementById('estado').value;
@@ -91,6 +137,15 @@ function buscarCertificado() {
                 // Exibir cada certificado
                 certificados.forEach(cert => {
                     const downloadUrl = `/download-certificado/${encodeURIComponent(cert.cpf)}/${encodeURIComponent(cert.curso)}`;
+                    const cursoAvaliado = cursoJaAvaliado(cert.cpf, cert.curso);
+                    
+                    const avaliacaoElement = cursoAvaliado ?
+                        `<span class="course-evaluated">
+                            <i class="fas fa-check-circle"></i> Curso avaliado!
+                         </span>` :
+                        `<a class="evaluation-btn" href="https://docs.google.com/forms/d/e/1FAIpQLScMa7x1JvlzTrC9e1_y99A754qzoLtUpim8wHlhqj3p1IF0PA/viewform?usp=sf_link" target="_blank" data-cpf="${cert.cpf}" data-curso="${cert.curso}">
+                            <i class="fas fa-star"></i> Avaliar Curso
+                         </a>`;
                     
                     const cardHtml = `
                         <div class="certificate-card">
@@ -109,15 +164,21 @@ function buscarCertificado() {
                                     <span>${cert.data_adesao}</span>
                                 </div>` : ''}
                             </div>
-                            <a class="download-btn" href="${downloadUrl}" target="_blank">
-                                Baixar Certificado
-                            </a>
+                            <div class="button-group">
+                                <a class="download-btn" href="${downloadUrl}" target="_blank">
+                                    <i class="fas fa-download"></i> Baixar Certificado
+                                </a>
+                                ${avaliacaoElement}
+                            </div>
                         </div>
                     `;
                     certificatesContainer.innerHTML += cardHtml;
                 });
                 
                 resultDiv.style.display = 'block';
+                
+                // Configurar os botões de avaliação após renderizar os certificados
+                configurarBotoesAvaliacao();
             }
         }
     })

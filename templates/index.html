@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='image/logo_carreta.ico') }}">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='image/logo_carreta.ico') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='image/logo_carreta.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='image/logo_Carreta_Digital.png') }}">
+    <!-- Garantindo que o ícone seja carregado -->
+    <link rel="preload" href="{{ url_for('static', filename='image/logo_carreta.ico') }}" as="image" type="image/x-icon">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -60,7 +64,8 @@
         </div>
         
         <footer class="footer">
-            &copy; 2025 RBCIP | Carreta Digital | Ministério das Comunicações | Governo Federal
+            <div>&copy; 2025 RBCIP | Carreta Digital | Ministério das Comunicações | Governo Federal</div>
+            <div class="contact-info">Contato: <a href="mailto:inscricaocarretadigital@rbcip.org">inscricaocarretadigital@rbcip.org</a></div>
         </footer>
     </div>
     
