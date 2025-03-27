@@ -2,9 +2,9 @@
 set -e
 
 echo "Aguardando o PostgreSQL..."
-# Use valores fixos, não variáveis
+# Usar variáveis de ambiente para conexão
 for i in {1..30}; do
-    if pg_isready -h db -U certificados_user -d certificados_db; then
+    if pg_isready -h db -U ${DATABASE_USER} -d ${DATABASE_NAME}; then
         echo "PostgreSQL está pronto!"
         break
     fi

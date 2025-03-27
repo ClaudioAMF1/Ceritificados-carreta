@@ -1,21 +1,23 @@
 version: '3.8'
-
 services:
   db:
     image: postgres:14
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
+    container_name: postgres_db_certificados
+    restart: always
+    env_file:
+      - .env
     environment:
-      - POSTGRES_PASSWORD=certificados_pwd
-      - POSTGRES_USER=certificados_user
-      - POSTGRES_DB=certificados_db
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
       - "5432:5432"
-    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U certificados_user -d certificados_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -24,6 +26,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+    container_name: certificados_web
+    restart: always
     volumes:
       - ./:/app
       - ./data:/app/data
@@ -32,14 +36,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
-      - DB_USER=certificados_user
-      - DB_PASSWORD=certificados_pwd
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=certificados_db
-      - DEBUG=True
-    restart: always
+      DB_USER: ${DATABASE_USER}
+      DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DATABASE_NAME}
+      DEBUG: ${DEBUG}
     networks:
       - app-network
 

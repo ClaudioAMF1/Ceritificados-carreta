@@ -1,6 +1,7 @@
 import psycopg2
 import time
 import sys
+import os
 from config.settings import DB_CONFIG
 
 def test_db_connection():
@@ -11,6 +12,14 @@ def test_db_connection():
             print(f"Tentativa {attempt+1}/{max_attempts}...")
             conn = psycopg2.connect(**DB_CONFIG)
             print("Conexão bem-sucedida!")
+            
+            # Verificar se podemos executar comandos
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1")
+            result = cursor.fetchone()
+            print(f"Resultado do teste: {result}")
+            
+            cursor.close()
             conn.close()
             return True
         except Exception as e:

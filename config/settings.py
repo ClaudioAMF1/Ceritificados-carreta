@@ -2,9 +2,9 @@ import os
 
 # Configuração da conexão com o PostgreSQL
 DB_CONFIG = {
-    "dbname": os.environ.get("DB_NAME", "certificados_db"),
-    "user": os.environ.get("DB_USER", "certificados_user"),
-    "password": os.environ.get("DB_PASSWORD", "certificados_pwd"),
+    "dbname": os.environ.get("DATABASE_NAME", "certificados_db"),
+    "user": os.environ.get("DATABASE_USER", "certificados_user"),
+    "password": os.environ.get("DATABASE_PASSWORD", "certificados_pwd"),
     "host": os.environ.get("DB_HOST", "db"),
     "port": os.environ.get("DB_PORT", "5432")
 }
