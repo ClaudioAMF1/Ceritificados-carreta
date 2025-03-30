@@ -50,18 +50,17 @@ O sistema é composto por:
 │   ├── test_api.py           # Testes da API
 │   └── test_db.py            # Testes de conexão com banco de dados
 ├── data/                     # Diretório para dados
-│   ├── .gitkeep              # Marcador para garantir que o diretório seja incluído no git
-│   └── base_dados.csv        # Arquivo CSV com dados dos certificados
+│   └── .gitkeep              # Marcador para garantir que o diretório seja incluído no git
 ├── docker/                   # Arquivos relacionados ao Docker
 │   ├── Dockerfile            # Configuração da imagem Docker
 │   └── entrypoint.sh         # Script de inicialização
 ├── .dockerignore             # Arquivos a serem ignorados pelo Docker
 ├── .gitignore                # Arquivos a serem ignorados pelo Git
+├── .env                      # Variáveis de ambiente para Docker Compose
 ├── docker-compose.yml        # Configuração do Docker Compose
 ├── requirements.txt          # Dependências do projeto
 ├── app.py                    # Ponto de entrada da aplicação
 ├── migrate.py                # Script para executar migrações manualmente
-├── reorganize.sh             # Script para reorganizar o projeto (opcional)
 └── README.md                 # Documentação principal do projeto
 ```
 
@@ -79,7 +78,8 @@ O sistema é composto por:
 | `static/js/main.js` | Lógica de frontend para interação com o usuário |
 | `docker-compose.yml` | Configura os serviços Docker (web e banco de dados) |
 | `docker/Dockerfile` | Define a imagem Docker para a aplicação |
-| `docker/entrypoint.sh` | Script executado na inicialização do contêiner
+| `docker/entrypoint.sh` | Script executado na inicialização do contêiner |
+| `.env` | Configurações de ambiente para a aplicação e banco de dados |
 
 ## Passo a Passo Completo para Instalação e Execução
 
@@ -96,12 +96,25 @@ O sistema é composto por:
    cd Certificados-carreta
    ```
 
-3. Crie uma pasta para os dados (se não existir)
+3. Verifique se a pasta `data` existe (e crie-a se necessário)
    ```
    mkdir -p data
    ```
 
 4. Coloque o arquivo CSV com os dados dos certificados na pasta `data` com o nome `base_dados.csv`
+
+5. Verifique o arquivo `.env` e ajuste as credenciais de banco de dados se necessário:
+   ```
+   # Configurações do banco de dados
+   DATABASE_USER=certificados_user
+   DATABASE_PASSWORD=certificados_pwd
+   DATABASE_NAME=certificados_db
+   DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:5432/${DATABASE_NAME}
+
+   # Configurações da aplicação
+   DEBUG=True
+   PORT=5000
+   ```
 
 ### 2. Configuração das Permissões
 
@@ -110,17 +123,12 @@ O sistema é composto por:
    chmod +x docker/entrypoint.sh
    ```
 
-2. Se estiver usando o script de reorganização, torne-o executável
-   ```
-   chmod +x reorganize.sh
-   ```
-
-3. Verifique se o usuário atual tem permissões para os diretórios
+2. Verifique se o usuário atual tem permissões para os diretórios
    ```
    sudo chown -R $(whoami):$(whoami) .
    ```
 
-4. Defina permissões corretas para diretórios de dados
+3. Defina permissões corretas para diretórios de dados
    ```
    chmod -R 755 data
    ```
@@ -341,18 +349,21 @@ cat backup_file.sql | docker-compose exec -T db psql -U certificados_user -d cer
 
 1. Backup do volume de dados do PostgreSQL
    ```
-   docker run --rm -v sistema-certificados_postgres_data:/volume -v $(pwd)/backups:/backup alpine tar -czvf /backup/postgres_data_$(date +%Y%m%d).tar.gz -C /volume ./
+   docker run --rm -v certificados-carreta_postgres_data:/volume -v $(pwd)/backups:/backup alpine tar -czvf /backup/postgres_data_$(date +%Y%m%d).tar.gz -C /volume ./
    ```
+   Nota: Substitua `certificados-carreta_postgres_data` pelo nome real do volume (use `docker volume ls` para verificar)
 
 2. Backup da pasta de dados CSV
    ```
+   mkdir -p backups
    tar -czvf backups/data_csv_$(date +%Y%m%d).tar.gz data/
    ```
 
 3. Salvar as imagens Docker como arquivos
    ```
-   docker save -o backups/images_$(date +%Y%m%d).tar sistema-certificados_web postgres:14
+   docker save -o backups/images_$(date +%Y%m%d).tar certificados-carreta_web postgres:14
    ```
+   Nota: Substitua `certificados-carreta_web` pelo nome real da imagem (use `docker images` para verificar)
 
 ### Restauração completa:
 
@@ -373,12 +384,13 @@ cat backup_file.sql | docker-compose exec -T db psql -U certificados_user -d cer
 
 4. Recriar volume vazio
    ```
-   docker volume create sistema-certificados_postgres_data
+   docker volume create certificados-carreta_postgres_data
    ```
+   Nota: Substitua pelo nome correto do volume conforme seu ambiente
 
 5. Restaurar dados do PostgreSQL
    ```
-   docker run --rm -v sistema-certificados_postgres_data:/volume -v $(pwd)/backups:/backup alpine tar -xzvf /backup/postgres_data_[DATA].tar.gz -C /volume
+   docker run --rm -v certificados-carreta_postgres_data:/volume -v $(pwd)/backups:/backup alpine tar -xzvf /backup/postgres_data_[DATA].tar.gz -C /volume
    ```
 
 6. Reiniciar serviços
@@ -394,8 +406,8 @@ Para desenvolver ou modificar o sistema:
 
 1. Clone o repositório
    ```
-   git clone [URL_DO_REPOSITORIO] sistema-certificados
-   cd sistema-certificados
+   git clone [URL_DO_REPOSITORIO] certificados-carreta
+   cd certificados-carreta
    ```
 
 2. Instale as dependências em um ambiente virtual
@@ -416,19 +428,19 @@ Para desenvolver ou modificar o sistema:
 3. Configure as variáveis de ambiente para desenvolvimento local
    ```
    # No Linux/Mac:
-   export DB_USER=certificados_user
-   export DB_PASSWORD=certificados_pwd
+   export DATABASE_USER=certificados_user
+   export DATABASE_PASSWORD=certificados_pwd
    export DB_HOST=localhost
    export DB_PORT=5432
-   export DB_NAME=certificados_db
+   export DATABASE_NAME=certificados_db
    export DEBUG=True
    
    # No Windows (PowerShell):
-   $env:DB_USER="certificados_user"
-   $env:DB_PASSWORD="certificados_pwd"
+   $env:DATABASE_USER="certificados_user"
+   $env:DATABASE_PASSWORD="certificados_pwd"
    $env:DB_HOST="localhost"
    $env:DB_PORT="5432"
-   $env:DB_NAME="certificados_db"
+   $env:DATABASE_NAME="certificados_db"
    $env:DEBUG="True"
    ```
 
@@ -440,8 +452,7 @@ Para desenvolver ou modificar o sistema:
 
 5. Execute os scripts de migração de banco de dados
    ```
-   python -m migrations.create_tables
-   python -m migrations.import_data
+   python migrate.py
    ```
 
 6. Inicie a aplicação em modo de desenvolvimento
